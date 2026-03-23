@@ -79,11 +79,14 @@ pass=0; fail=0
 
 if [ -n "$1" ]; then
     for t in "${TESTS[@]}"; do
-        [[ "$(basename $t)" == "$1" ]] && { compile_test "$t" && ((pass++)) || ((fail++)); break; }
+        if [[ "$(basename $t)" == "$1" ]]; then
+            if compile_test "$t"; then ((++pass)); else ((++fail)); fi
+            break
+        fi
     done
 else
     for t in "${TESTS[@]}"; do
-        compile_test "$t" && ((pass++)) || ((fail++))
+        if compile_test "$t"; then ((++pass)); else ((++fail)); fi
     done
 fi
 

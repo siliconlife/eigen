@@ -228,7 +228,12 @@ struct GpuDevice {
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void memcpy(void* dst, const void* src, size_t n) const {
 #ifndef EIGEN_GPU_COMPILE_PHASE
+#if defined(EIGEN_USE_MUSA)
+    // MUSA: Use synchronous memcpy to avoid race conditions
+    gpuError_t err = gpuMemcpy(dst, src, n, gpuMemcpyDeviceToDevice);
+#else
     gpuError_t err = gpuMemcpyAsync(dst, src, n, gpuMemcpyDeviceToDevice, stream_->stream());
+#endif
     EIGEN_UNUSED_VARIABLE(err)
     gpu_assert(err == gpuSuccess);
 #else
@@ -287,10 +292,22 @@ struct GpuDevice {
       err = gpuMemsetAsync(buffer, value_bytes[0], count * sizeof(T), stream_->stream());
       gpu_assert(err == gpuSuccess);
     } else {
+#if defined(EIGEN_USE_MUSA)
+      // MUSA: musaMemset2DAsync requires aligned pointers; use host-side fill + memcpy instead.
+      // Use synchronous memcpy to avoid race condition with host buffer deletion.
+      char* host_buf = new char[count * value_size];
+      for (size_t i = 0; i < count; ++i) {
+        std::memcpy(host_buf + i * value_size, value_bytes, value_size);
+      }
+      err = gpuMemcpy(buffer, host_buf, count * value_size, gpuMemcpyHostToDevice);
+      delete[] host_buf;
+      gpu_assert(err == gpuSuccess);
+#else
       for (int b = 0; b < value_size; ++b) {
         err = gpuMemset2DAsync(buffer + b, value_size, value_bytes[b], 1, count, stream_->stream());
         gpu_assert(err == gpuSuccess);
       }
+#endif
     }
 #else
     EIGEN_UNUSED_VARIABLE(begin)
@@ -338,6 +355,7 @@ struct GpuDevice {
   }
   EIGEN_STRONG_INLINE int majorDeviceVersion() const { return stream_->deviceProperties().major; }
   EIGEN_STRONG_INLINE int minorDeviceVersion() const { return stream_->deviceProperties().minor; }
+  EIGEN_STRONG_INLINE int warpSize() const { return stream_->deviceProperties().warpSize; }
 
   EIGEN_STRONG_INLINE int maxBlocks() const { return max_blocks_; }
 

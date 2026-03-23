@@ -54,6 +54,7 @@ void test_gpu_contraction(int m_size, int k_size, int n_size) {
   Eigen::TensorMap<Eigen::Tensor<float, 2, DataLayout> > gpu_t_result(d_t_result, Eigen::array<int, 2>{m_size, n_size});
 
   gpu_t_result.device(gpu_device) = gpu_t_left.contract(gpu_t_right, dims);
+  gpuDeviceSynchronize();
   t_result = t_left.contract(t_right, dims);
 
   gpuMemcpy(t_result_gpu.data(), d_t_result, t_result_bytes, gpuMemcpyDeviceToHost);
@@ -111,6 +112,7 @@ void test_scalar(int m_size, int k_size, int n_size) {
   Eigen::TensorMap<Eigen::Tensor<float, 0, DataLayout> > gpu_t_result(d_t_result);
 
   gpu_t_result.device(gpu_device) = gpu_t_left.contract(gpu_t_right, dims);
+  gpuDeviceSynchronize();
   t_result = t_left.contract(t_right, dims);
 
   gpuMemcpy(t_result_gpu.data(), d_t_result, t_result_bytes, gpuMemcpyDeviceToHost);

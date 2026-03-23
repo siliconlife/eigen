@@ -405,9 +405,9 @@ void test_gpu() {
     }
   }
 
-#if !defined(EIGEN_USE_HIP)
-  // disable this test on the HIP platform
-  // 3D tensor convolutions seem to hang on the HIP platform
+#if !defined(EIGEN_USE_HIP) && !defined(EIGEN_USE_MUSA)
+  // disable this test on the HIP and MUSA platforms
+  // 3D tensor convolutions seem to hang on the HIP/MUSA platform
 
   test_3d_convolution(&context);
   assert(gpuMemcpyAsync(out.data(), d_out, out_bytes, gpuMemcpyDeviceToHost, context.device().stream()) == gpuSuccess);

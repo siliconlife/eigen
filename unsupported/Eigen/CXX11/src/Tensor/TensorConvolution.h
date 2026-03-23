@@ -851,7 +851,7 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
     const int maxThreadsPerBlock = m_device.maxGpuThreadsPerBlock();
     const int maxBlocksPerProcessor = m_device.maxGpuThreadsPerMultiProcessor() / maxThreadsPerBlock;
     const int numMultiProcessors = m_device.getNumGpuMultiProcessors();
-    const int warpSize = 32;
+    const int warpSize = m_device.warpSize();
 
     switch (NumKernelDims) {
       case 1: {
@@ -866,7 +866,8 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
             static_cast<int>(Layout) == static_cast<int>(ColMajor) ? 0 : m_inputImpl.dimensions().rank() - 1;
         if (m_indices[0] == single_stride_dim) {
           // Maximum the reuse
-          const int inner_dim = ((maxSharedMem / (sizeof(Scalar)) - kernel_size + 1 + 31) / 32) * 32;
+          const int inner_dim =
+              ((maxSharedMem / (sizeof(Scalar)) - kernel_size + 1 + warpSize - 1) / warpSize) * warpSize;
           maxX = numext::mini<int>(inner_dim, numX);
           const int maxP = numext::mini<int>(maxSharedMem / ((kernel_size - 1 + maxX) * sizeof(Scalar)), numP);
           block_size.x = numext::mini(maxThreadsPerBlock, maxX);
@@ -934,7 +935,8 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
             sqrtf(static_cast<float>(maxSharedMem) / (sizeof(Scalar) * kernel_size_y * kernel_size_x));
 
         // Snap maxX to warp size
-        int inner_dim = ((static_cast<int>(scaling_factor * kernel_size_x) - kernel_size_x + 1 + 32) / 32) * 32;
+        int inner_dim =
+            ((static_cast<int>(scaling_factor * kernel_size_x) - kernel_size_x + 1 + warpSize) / warpSize) * warpSize;
         const int maxX = numext::mini<int>(inner_dim, numX);
         const int maxY =
             numext::mini<int>(maxSharedMem / (sizeof(Scalar) * (maxX + kernel_size_x - 1)) - kernel_size_y + 1, numY);
@@ -1042,8 +1044,8 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
                      numZ));
 
         dim3 block_size;
-        block_size.x = numext::mini(32, maxX);
-        block_size.y = numext::mini(32, maxY);
+        block_size.x = numext::mini(warpSize, maxX);
+        block_size.y = numext::mini(warpSize, maxY);
         block_size.z = numext::mini<int>(1024 / (block_size.x * block_size.y), maxZ);
         dim3 num_blocks(ceil(numX, maxX), ceil(numY, maxY), ceil(numZ, maxZ));
 
