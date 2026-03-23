@@ -24,9 +24,9 @@ void test_cuda_complex_cwise_ops() {
   std::complex<T>* d_in1;
   std::complex<T>* d_in2;
   std::complex<T>* d_out;
-  cudaMalloc((void**)(&d_in1), complex_bytes);
-  cudaMalloc((void**)(&d_in2), complex_bytes);
-  cudaMalloc((void**)(&d_out), complex_bytes);
+  gpuMalloc((void**)(&d_in1), complex_bytes);
+  gpuMalloc((void**)(&d_in2), complex_bytes);
+  gpuMalloc((void**)(&d_out), complex_bytes);
 
   Eigen::GpuStreamDevice stream;
   Eigen::GpuDevice gpu_device(&stream);
@@ -70,18 +70,19 @@ void test_cuda_complex_cwise_ops() {
       case NbOps:
         break;
     }
-    assert(cudaMemcpyAsync(actual.data(), d_out, complex_bytes, cudaMemcpyDeviceToHost, gpu_device.stream()) ==
-           cudaSuccess);
-    assert(cudaStreamSynchronize(gpu_device.stream()) == cudaSuccess);
+    assert(gpuMemcpyAsync(actual.data(), d_out, complex_bytes, gpuMemcpyDeviceToHost, gpu_device.stream()) ==
+           gpuSuccess);
+    assert(gpuStreamSynchronize(gpu_device.stream()) == gpuSuccess);
 
     for (int i = 0; i < kNumItems; ++i) {
       VERIFY_IS_APPROX(actual(i), expected);
     }
   }
 
-  cudaFree(d_in1);
-  cudaFree(d_in2);
-  cudaFree(d_out);
+  gpuFree(d_in1);
+  gpuFree(d_in2);
+  gpuFree(d_out);
+  std::cout << "  Test passed: test_cuda_complex_cwise_ops<" << typeid(T).name() << ">" << std::endl;
 }
 
 EIGEN_DECLARE_TEST(test_cxx11_tensor_complex_cwise_ops) {

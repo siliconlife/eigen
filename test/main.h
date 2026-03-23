@@ -299,7 +299,7 @@ static std::vector<std::string> eigen_assert_list;
   }
 #endif  // EIGEN_EXCEPTIONS
 
-#elif !defined(__CUDACC__) && !defined(__HIPCC__) && !defined(__SYCL_DEVICE_ONLY__)  // EIGEN_DEBUG_ASSERTS
+#elif !defined(__CUDACC__) && !defined(__HIPCC__) && !defined(__MUSACC__) && !defined(__SYCL_DEVICE_ONLY__)  // EIGEN_DEBUG_ASSERTS
 #define eigen_assert(a)                               \
   if ((!(a)) && (!no_more_assert)) {                  \
     Eigen::no_more_assert = true;                     \
@@ -330,7 +330,7 @@ static std::vector<std::string> eigen_assert_list;
 #define VERIFY_RAISES_ASSERT(a) std::cout << "Can't VERIFY_RAISES_ASSERT( " #a " ) with exceptions disabled\n";
 #endif
 
-#if !defined(__CUDACC__) && !defined(__HIPCC__) && !defined(SYCL_DEVICE_ONLY)
+#if !defined(__CUDACC__) && !defined(__HIPCC__) && !defined(__MUSACC__) && !defined(SYCL_DEVICE_ONLY)
 #define EIGEN_USE_CUSTOM_ASSERT
 #endif
 

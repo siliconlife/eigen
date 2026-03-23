@@ -101,6 +101,9 @@ struct DefaultDevice {
     // Running on a HIP device
     // return 1 as major for HIP
     return 1;
+#elif defined(EIGEN_MUSA_ARCH)
+    // Running on a MUSA device
+    return EIGEN_MUSA_ARCH / 100;
 #else
     // Running on a CUDA device
     return EIGEN_CUDA_ARCH / 100;

@@ -37,6 +37,7 @@ void test_gpu_random_uniform() {
 
   // For now we just check this code doesn't crash.
   // TODO: come up with a valid test of randomness
+  std::cout << "  Test passed: test_gpu_random_uniform" << std::endl;
 }
 
 void test_gpu_random_normal() {
@@ -58,6 +59,7 @@ void test_gpu_random_normal() {
 
   assert(gpuMemcpyAsync(out.data(), d_out, out_bytes, gpuMemcpyDeviceToHost, gpu_device.stream()) == gpuSuccess);
   assert(gpuStreamSynchronize(gpu_device.stream()) == gpuSuccess);
+  std::cout << "  Test passed: test_gpu_random_normal" << std::endl;
 }
 
 static void test_complex() {
@@ -69,6 +71,7 @@ static void test_complex() {
   for (int i = 1; i < 6; ++i) {
     VERIFY_IS_NOT_EQUAL(vec(i), vec(i - 1));
   }
+  std::cout << "  Test passed: test_complex" << std::endl;
 }
 
 EIGEN_DECLARE_TEST(cxx11_tensor_random_gpu) {

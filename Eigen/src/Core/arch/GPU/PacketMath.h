@@ -587,7 +587,7 @@ EIGEN_DEVICE_FUNC inline void ptranspose(PacketBlock<double2, 2>& kernel) {
 // Half-packet functions are not available on the host for CUDA 9.0-9.2, only
 // on device. There is no benefit to using them on the host anyways, since they are
 // emulated.
-#if (defined(EIGEN_HAS_CUDA_FP16) || defined(EIGEN_HAS_HIP_FP16)) && defined(EIGEN_GPU_COMPILE_PHASE)
+#if (defined(EIGEN_HAS_CUDA_FP16) || defined(EIGEN_HAS_HIP_FP16) || defined(EIGEN_HAS_MUSA_FP16)) && defined(EIGEN_GPU_COMPILE_PHASE)
 
 typedef ulonglong2 Packet4h2;
 template <>

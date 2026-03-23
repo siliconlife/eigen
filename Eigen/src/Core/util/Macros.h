@@ -602,9 +602,18 @@
 #define EIGEN_HIP_LAUNCH_BOUNDS_1024
 #endif  // !defined(EIGEN_HIP_LAUNCH_BOUNDS_1024)
 
-// Unify CUDA/HIPCC
+#if defined(__MUSACC__) && !defined(EIGEN_NO_MUSA) && !defined(__SYCL_DEVICE_ONLY__)
+// Means the compiler is mcc (Moore Threads MUSA compiler)
+#define EIGEN_MUSACC __MUSACC__
+#include <musa_runtime.h>
+#if defined(__MUSA_ARCH__) && !defined(__SYCL_DEVICE_ONLY__)
+#define EIGEN_MUSA_ARCH __MUSA_ARCH__
+#endif
+#endif
 
-#if defined(EIGEN_CUDACC) || defined(EIGEN_HIPCC)
+// Unify CUDA/HIP/MUSA
+
+#if defined(EIGEN_CUDACC) || defined(EIGEN_HIPCC) || defined(EIGEN_MUSACC)
 //
 // If either EIGEN_CUDACC or EIGEN_HIPCC is defined, then define EIGEN_GPUCC
 //
@@ -627,9 +636,9 @@
 //
 #endif
 
-#if defined(EIGEN_CUDA_ARCH) || defined(EIGEN_HIP_DEVICE_COMPILE)
+#if defined(EIGEN_CUDA_ARCH) || defined(EIGEN_HIP_DEVICE_COMPILE) || defined(EIGEN_MUSA_ARCH)
 //
-// If either EIGEN_CUDA_ARCH or EIGEN_HIP_DEVICE_COMPILE is defined, then define EIGEN_GPU_COMPILE_PHASE
+// If any of EIGEN_CUDA_ARCH, EIGEN_HIP_DEVICE_COMPILE, or EIGEN_MUSA_ARCH is defined, then define EIGEN_GPU_COMPILE_PHASE
 //
 #define EIGEN_GPU_COMPILE_PHASE
 //

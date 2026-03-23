@@ -51,6 +51,7 @@ void test_gpu_numext() {
   gpu_device.deallocate(d_float);
   gpu_device.deallocate(d_res_half);
   gpu_device.deallocate(d_res_float);
+  std::cout << "  Test passed: test_gpu_numext" << std::endl;
 }
 
 #ifdef EIGEN_HAS_GPU_FP16
@@ -85,6 +86,7 @@ void test_gpu_conversion() {
   gpu_device.deallocate(d_float);
   gpu_device.deallocate(d_half);
   gpu_device.deallocate(d_conv);
+  std::cout << "  Test passed: test_gpu_conversion" << std::endl;
 }
 
 template <typename>
@@ -119,6 +121,7 @@ void test_gpu_unary() {
   gpu_device.deallocate(d_float);
   gpu_device.deallocate(d_res_half);
   gpu_device.deallocate(d_res_float);
+  std::cout << "  Test passed: test_gpu_unary" << std::endl;
 }
 
 template <typename>
@@ -160,6 +163,7 @@ void test_gpu_elementwise() {
   gpu_device.deallocate(d_float2);
   gpu_device.deallocate(d_res_half);
   gpu_device.deallocate(d_res_float);
+  std::cout << "  Test passed: test_gpu_elementwise" << std::endl;
 }
 
 template <typename>
@@ -257,6 +261,7 @@ void test_gpu_trancendental() {
   gpu_device.deallocate(d_res2_float);
   gpu_device.deallocate(d_res3_float);
   gpu_device.deallocate(d_res3_half);
+  std::cout << "  Test passed: test_gpu_trancendental" << std::endl;
 }
 
 template <typename>
@@ -304,6 +309,7 @@ void test_gpu_contractions() {
   gpu_device.deallocate(d_float2);
   gpu_device.deallocate(d_res_half);
   gpu_device.deallocate(d_res_float);
+  std::cout << "  Test passed: test_gpu_contractions" << std::endl;
 }
 
 template <typename>
@@ -343,6 +349,7 @@ void test_gpu_reductions(int size1, int size2, int redux) {
   gpu_device.deallocate(d_float);
   gpu_device.deallocate(d_res_half);
   gpu_device.deallocate(d_res_float);
+  std::cout << "  Test passed: test_gpu_reductions(" << size1 << ", " << size2 << ", " << redux << ")" << std::endl;
 }
 
 template <typename>
@@ -355,6 +362,7 @@ void test_gpu_reductions() {
 
   test_gpu_reductions<void>(36, 35, 0);
   test_gpu_reductions<void>(36, 35, 1);
+  std::cout << "  Test passed: test_gpu_reductions<>" << std::endl;
 }
 
 template <typename>
@@ -396,6 +404,7 @@ void test_gpu_full_reductions() {
   gpu_device.deallocate(d_float);
   gpu_device.deallocate(d_res_half);
   gpu_device.deallocate(d_res_float);
+  std::cout << "  Test passed: test_gpu_full_reductions" << std::endl;
 }
 
 template <typename>
@@ -441,6 +450,7 @@ void test_gpu_forced_evals() {
   gpu_device.deallocate(d_res_half1);
   gpu_device.deallocate(d_res_half2);
   gpu_device.deallocate(d_res_float);
+  std::cout << "  Test passed: test_gpu_forced_evals" << std::endl;
 }
 #endif
 

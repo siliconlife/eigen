@@ -28,11 +28,11 @@ void test_cuda_nullary() {
   std::complex<float>* d_in1;
   std::complex<float>* d_in2;
   float* d_out2;
-  cudaMalloc((void**)(&d_in1), complex_bytes);
-  cudaMalloc((void**)(&d_in2), complex_bytes);
-  cudaMalloc((void**)(&d_out2), float_bytes);
-  cudaMemcpy(d_in1, in1.data(), complex_bytes, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_in2, in2.data(), complex_bytes, cudaMemcpyHostToDevice);
+  gpuMalloc((void**)(&d_in1), complex_bytes);
+  gpuMalloc((void**)(&d_in2), complex_bytes);
+  gpuMalloc((void**)(&d_out2), float_bytes);
+  gpuMemcpy(d_in1, in1.data(), complex_bytes, gpuMemcpyHostToDevice);
+  gpuMemcpy(d_in2, in2.data(), complex_bytes, gpuMemcpyHostToDevice);
 
   Eigen::GpuStreamDevice stream;
   Eigen::GpuDevice gpu_device(&stream);
@@ -47,20 +47,21 @@ void test_cuda_nullary() {
   Tensor<std::complex<float>, 1, 0, int> new1(2);
   Tensor<float, 1, 0, int> new2(2);
 
-  assert(cudaMemcpyAsync(new1.data(), d_in1, complex_bytes, cudaMemcpyDeviceToHost, gpu_device.stream()) ==
-         cudaSuccess);
-  assert(cudaMemcpyAsync(new2.data(), d_out2, float_bytes, cudaMemcpyDeviceToHost, gpu_device.stream()) == cudaSuccess);
+  assert(gpuMemcpyAsync(new1.data(), d_in1, complex_bytes, gpuMemcpyDeviceToHost, gpu_device.stream()) ==
+         gpuSuccess);
+  assert(gpuMemcpyAsync(new2.data(), d_out2, float_bytes, gpuMemcpyDeviceToHost, gpu_device.stream()) == gpuSuccess);
 
-  assert(cudaStreamSynchronize(gpu_device.stream()) == cudaSuccess);
+  assert(gpuStreamSynchronize(gpu_device.stream()) == gpuSuccess);
 
   for (int i = 0; i < 2; ++i) {
     VERIFY_IS_APPROX(new1(i), std::complex<float>(3.14f, 2.7f));
     VERIFY_IS_APPROX(new2(i), std::abs(in2(i)));
   }
 
-  cudaFree(d_in1);
-  cudaFree(d_in2);
-  cudaFree(d_out2);
+  gpuFree(d_in1);
+  gpuFree(d_in2);
+  gpuFree(d_out2);
+  std::cout << "  Test passed: test_cuda_nullary" << std::endl;
 }
 
 static void test_cuda_sum_reductions() {
@@ -96,6 +97,7 @@ static void test_cuda_sum_reductions() {
 
   gpu_device.deallocate(gpu_in_ptr);
   gpu_device.deallocate(gpu_out_ptr);
+  std::cout << "  Test passed: test_cuda_sum_reductions" << std::endl;
 }
 
 static void test_cuda_mean_reductions() {
@@ -131,6 +133,7 @@ static void test_cuda_mean_reductions() {
 
   gpu_device.deallocate(gpu_in_ptr);
   gpu_device.deallocate(gpu_out_ptr);
+  std::cout << "  Test passed: test_cuda_mean_reductions" << std::endl;
 }
 
 static void test_cuda_product_reductions() {
@@ -166,6 +169,7 @@ static void test_cuda_product_reductions() {
 
   gpu_device.deallocate(gpu_in_ptr);
   gpu_device.deallocate(gpu_out_ptr);
+  std::cout << "  Test passed: test_cuda_product_reductions" << std::endl;
 }
 
 EIGEN_DECLARE_TEST(test_cxx11_tensor_complex) {

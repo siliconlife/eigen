@@ -3,3 +3,23 @@
 For more information go to http://eigen.tuxfamily.org/ or https://libeigen.gitlab.io/docs/.
 
 For ***pull request***, ***bug reports***, and ***feature requests***, go to https://gitlab.com/libeigen/eigen.
+
+
+# clone repo
+```
+
+```
+
+# build test cases command for musa
+./build.sh
+
+```
+
+```
+
+# run test cases command for musa
+./run.sh
+
+```
+
+```

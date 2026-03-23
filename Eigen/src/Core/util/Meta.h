@@ -25,6 +25,9 @@
 #if defined(EIGEN_HIP_DEVICE_COMPILE)
 #include "Eigen/src/Core/arch/HIP/hcc/math_constants.h"
 #endif
+#if defined(EIGEN_MUSA_ARCH)
+#include "Eigen/src/Core/arch/MUSA/math_constants.h"
+#endif
 
 #endif
 

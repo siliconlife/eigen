@@ -30,6 +30,8 @@
 #include <cuda_runtime.h>
 #elif defined(EIGEN_HIPCC)
 #include <hip/hip_runtime.h>
+#elif defined(EIGEN_MUSACC)
+#include <musa_runtime.h>
 #endif
 
 #ifdef EIGEN_EXCEPTIONS
@@ -54,11 +56,11 @@
 // and inclusion of their respective header files
 #include "src/Core/util/MKL_support.h"
 
-#if defined(EIGEN_HAS_CUDA_FP16) || defined(EIGEN_HAS_HIP_FP16)
+#if defined(EIGEN_HAS_CUDA_FP16) || defined(EIGEN_HAS_HIP_FP16) || defined(EIGEN_HAS_MUSA_FP16)
 #define EIGEN_HAS_GPU_FP16
 #endif
 
-#if defined(EIGEN_HAS_CUDA_BF16) || defined(EIGEN_HAS_HIP_BF16)
+#if defined(EIGEN_HAS_CUDA_BF16) || defined(EIGEN_HAS_HIP_BF16) || defined(EIGEN_HAS_MUSA_BF16)
 #define EIGEN_HAS_GPU_BF16
 #endif
 
@@ -311,6 +313,11 @@ using std::ptrdiff_t;
 // Specialized functors for GPU.
 #ifdef EIGEN_GPUCC
 #include "src/Core/arch/GPU/Complex.h"
+#endif
+
+// MUSA device math function stubs (must come after standard headers).
+#ifdef EIGEN_MUSACC
+#include "src/Core/arch/MUSA/math_functions.h"
 #endif
 
 // Specializations of vectorized activation functions for NEON.

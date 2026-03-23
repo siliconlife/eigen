@@ -123,19 +123,15 @@ EIGEN_DEVICE_FUNC inline void check_that_free_is_allowed() {}
 #endif
 
 EIGEN_DEVICE_FUNC inline void throw_std_bad_alloc() {
-#ifdef EIGEN_EXCEPTIONS
+#if defined(EIGEN_EXCEPTIONS) && !defined(EIGEN_GPU_COMPILE_PHASE)
   throw std::bad_alloc();
 #else
   std::size_t huge = static_cast<std::size_t>(-1);
-#if defined(EIGEN_HIPCC)
+#if defined(EIGEN_HIPCC) || defined(EIGEN_MUSACC)
   //
   // calls to "::operator new" are to be treated as opaque function calls (i.e no inlining),
-  // and as a consequence the code in the #else block triggers the hipcc warning :
+  // and as a consequence the code in the #else block triggers the hipcc/musacc warning :
   // "no overloaded function has restriction specifiers that are compatible with the ambient context"
-  //
-  // "throw_std_bad_alloc" has the EIGEN_DEVICE_FUNC attribute, so it seems that hipcc expects
-  // the same on "operator new"
-  // Reverting code back to the old version in this #if block for the hipcc compiler
   //
   new int[huge];
 #else

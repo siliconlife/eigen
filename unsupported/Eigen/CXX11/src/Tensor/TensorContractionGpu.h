@@ -390,8 +390,11 @@ __device__ EIGEN_STRONG_INLINE void EigenContractionKernelInternal(const LhsMapp
   // the sum across all big k blocks of the product of little k block of index (x, y)
   // with block of index (y, z). To compute the final output, we need to reduce
   // the 8 threads over y by summation.
-#if defined(EIGEN_HIPCC) || (defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000)
+#if defined(EIGEN_HIPCC) || (!defined(EIGEN_MUSACC) && defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000)
 #define shuffleInc(i, j, mask) res(i, j) += __shfl_xor(res(i, j), mask)
+#elif defined(EIGEN_MUSACC)
+// MUSA: explicit float cast avoids ambiguity when Scalar=Eigen::half
+#define shuffleInc(i, j, mask) res(i, j) += static_cast<Scalar>(__shfl_xor_sync(0xFFFFFFFF, static_cast<float>(res(i, j)), mask))
 #else
 #define shuffleInc(i, j, mask) res(i, j) += __shfl_xor_sync(0xFFFFFFFF, res(i, j), mask)
 #endif
@@ -509,8 +512,16 @@ __launch_bounds__(512)
 #endif
     EigenContractionKernel(const LhsMapper lhs, const RhsMapper rhs, const OutputMapper output, const Index m_size,
                            const Index n_size, const Index k_size) {
+#if defined(EIGEN_MUSACC)
+  // MUSA: use char array to avoid initialization issues with non-POD types like bfloat16
+  __shared__ char lhs_shmem_raw[72 * 64 * sizeof(Scalar)];
+  __shared__ char rhs_shmem_raw[72 * 64 * sizeof(Scalar)];
+  Scalar* lhs_shmem = reinterpret_cast<Scalar*>(lhs_shmem_raw);
+  Scalar* rhs_shmem = reinterpret_cast<Scalar*>(rhs_shmem_raw);
+#else
   __shared__ Scalar lhs_shmem[72 * 64];
   __shared__ Scalar rhs_shmem[72 * 64];
+#endif
 
   const Index m_block_idx = blockIdx.x;
   const Index n_block_idx = blockIdx.y;
@@ -617,7 +628,7 @@ __device__ __forceinline__ void EigenFloatContractionKernelInternal16x16(const L
       x1 = rhs_pf0.x;
       x2 = rhs_pf0.z;
     }
-#if defined(EIGEN_HIPCC) || (defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000)
+#if defined(EIGEN_HIPCC) || (!defined(EIGEN_MUSACC) && defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000)
     x1 = __shfl_xor(x1, 4);
     x2 = __shfl_xor(x2, 4);
 #else
@@ -1372,6 +1383,8 @@ struct TensorEvaluator<const TensorContractionOp<Indices, LeftArgType, RightArgT
 
 #if defined(EIGEN_USE_HIP)
     setGpuSharedMemConfig(hipSharedMemBankSizeEightByte);
+#elif defined(EIGEN_USE_MUSA)
+    setGpuSharedMemConfig(musaSharedMemBankSizeEightByte);
 #else
     setGpuSharedMemConfig(cudaSharedMemBankSizeEightByte);
 #endif

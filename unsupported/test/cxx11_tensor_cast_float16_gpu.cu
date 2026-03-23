@@ -52,6 +52,7 @@ void test_gpu_conversion() {
   gpu_device.deallocate(d_float);
   gpu_device.deallocate(d_half);
   gpu_device.deallocate(d_conv);
+  std::cout << "  Test passed: test_gpu_conversion" << std::endl;
 }
 
 void test_fallback_conversion() {
@@ -65,6 +66,7 @@ void test_fallback_conversion() {
   for (int i = 0; i < num_elem; ++i) {
     VERIFY_IS_APPROX(floats(i), conv(i));
   }
+  std::cout << "  Test passed: test_fallback_conversion" << std::endl;
 }
 
 EIGEN_DECLARE_TEST(cxx11_tensor_cast_float16_gpu) {

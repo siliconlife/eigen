@@ -498,6 +498,15 @@ extern "C" {
 #include <hip/hip_bfloat16.h>
 #endif
 
+#if defined(EIGEN_MUSACC)
+#define EIGEN_VECTORIZE_GPU
+// FP16 and BF16 are supported on MUSA platform
+#define EIGEN_HAS_MUSA_FP16
+#include <musa_fp16.h>
+#define EIGEN_HAS_MUSA_BF16
+#include <musa_bf16.h>
+#endif
+
 /** \brief Namespace containing all symbols from the %Eigen library. */
 // IWYU pragma: private
 #include "../InternalHeaderCheck.h"

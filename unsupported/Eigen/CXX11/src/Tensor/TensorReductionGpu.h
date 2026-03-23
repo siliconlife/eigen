@@ -188,9 +188,10 @@ __global__ EIGEN_HIP_LAUNCH_BOUNDS_1024 void FullReductionKernel(Reducer reducer
     } else {
       reducer.reduce(__shfl_down(static_cast<int>(accum), offset, warpSize), &accum);
     }
-#elif defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000
+#elif !defined(EIGEN_MUSACC) && defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000
     reducer.reduce(__shfl_down(accum, offset, warpSize), &accum);
 #else
+    // MUSA and CUDA 9.0+ use __shfl_down_sync
     reducer.reduce(__shfl_down_sync(0xFFFFFFFF, accum, offset, warpSize), &accum);
 #endif
   }
@@ -319,7 +320,7 @@ __global__ EIGEN_HIP_LAUNCH_BOUNDS_1024 void FullReductionKernelHalfFloat(Reduce
       hr[i] = wka_out.h;
     }
     reducer.reducePacket(r1, &accum);
-#elif defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000
+#elif !defined(EIGEN_MUSACC) && defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000
     PacketType r1;
     half2* hr = reinterpret_cast<half2*>(&r1);
     half2* hacc = reinterpret_cast<half2*>(&accum);
@@ -543,7 +544,7 @@ __global__ EIGEN_HIP_LAUNCH_BOUNDS_1024 void InnerReductionKernel(Reducer reduce
         } else {
           reducer.reduce(__shfl_down(static_cast<int>(reduced_val), offset), &reduced_val);
         }
-#elif defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000
+#elif !defined(EIGEN_MUSACC) && defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000
         reducer.reduce(__shfl_down(reduced_val, offset), &reduced_val);
 #else
         reducer.reduce(__shfl_down_sync(0xFFFFFFFF, reduced_val, offset), &reduced_val);
@@ -683,7 +684,7 @@ __global__ EIGEN_HIP_LAUNCH_BOUNDS_1024 void InnerReductionKernelHalfFloat(Reduc
         }
         reducer.reducePacket(r1, &reduced_val1);
         reducer.reducePacket(r2, &reduced_val2);
-#elif defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000
+#elif !defined(EIGEN_MUSACC) && defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER < 90000
         PacketType r1;
         PacketType r2;
         half2* hr1 = reinterpret_cast<half2*>(&r1);

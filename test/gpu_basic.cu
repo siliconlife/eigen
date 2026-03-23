@@ -398,7 +398,9 @@ EIGEN_DECLARE_TEST(gpu_basic) {
 #endif
 
   CALL_SUBTEST(run_and_compare_to_gpu(coeff_wise<Vector3f>(), nthreads, in, out));
+  std::cout << "  Test passed: coeff_wise<Vector3f>" << std::endl;
   CALL_SUBTEST(run_and_compare_to_gpu(coeff_wise<Array44f>(), nthreads, in, out));
+  std::cout << "  Test passed: coeff_wise<Array44f>" << std::endl;
 
 #if !defined(EIGEN_USE_HIP)
   // FIXME
@@ -411,32 +413,49 @@ EIGEN_DECLARE_TEST(gpu_basic) {
   CALL_SUBTEST(run_and_compare_to_gpu(replicate<Array4f>(), nthreads, in, out));
   CALL_SUBTEST(run_and_compare_to_gpu(replicate<Array33f>(), nthreads, in, out));
 
-  // HIP does not support new/delete on device.
+  // HIP and MUSA do not support new/delete on device.
+#if !defined(EIGEN_USE_MUSA)
   CALL_SUBTEST(run_and_compare_to_gpu(alloc_new_delete<Vector3f>(), nthreads, in, out));
+  std::cout << "  Test passed: alloc_new_delete<Vector3f>" << std::endl;
+#endif
 #endif
 
   CALL_SUBTEST(run_and_compare_to_gpu(redux<Array4f>(), nthreads, in, out));
+  std::cout << "  Test passed: redux<Array4f>" << std::endl;
   CALL_SUBTEST(run_and_compare_to_gpu(redux<Matrix3f>(), nthreads, in, out));
+  std::cout << "  Test passed: redux<Matrix3f>" << std::endl;
 
   CALL_SUBTEST(run_and_compare_to_gpu(prod_test<Matrix3f, Matrix3f>(), nthreads, in, out));
+  std::cout << "  Test passed: prod_test<Matrix3f, Matrix3f>" << std::endl;
   CALL_SUBTEST(run_and_compare_to_gpu(prod_test<Matrix4f, Vector4f>(), nthreads, in, out));
+  std::cout << "  Test passed: prod_test<Matrix4f, Vector4f>" << std::endl;
 
   CALL_SUBTEST(run_and_compare_to_gpu(diagonal<Matrix3f, Vector3f>(), nthreads, in, out));
+  std::cout << "  Test passed: diagonal<Matrix3f, Vector3f>" << std::endl;
   CALL_SUBTEST(run_and_compare_to_gpu(diagonal<Matrix4f, Vector4f>(), nthreads, in, out));
+  std::cout << "  Test passed: diagonal<Matrix4f, Vector4f>" << std::endl;
 
   CALL_SUBTEST(run_and_compare_to_gpu(matrix_inverse<Matrix2f>(), nthreads, in, out));
+  std::cout << "  Test passed: matrix_inverse<Matrix2f>" << std::endl;
   CALL_SUBTEST(run_and_compare_to_gpu(matrix_inverse<Matrix3f>(), nthreads, in, out));
+  std::cout << "  Test passed: matrix_inverse<Matrix3f>" << std::endl;
   CALL_SUBTEST(run_and_compare_to_gpu(matrix_inverse<Matrix4f>(), nthreads, in, out));
+  std::cout << "  Test passed: matrix_inverse<Matrix4f>" << std::endl;
 
   CALL_SUBTEST(run_and_compare_to_gpu(eigenvalues_direct<Matrix3f>(), nthreads, in, out));
+  std::cout << "  Test passed: eigenvalues_direct<Matrix3f>" << std::endl;
   CALL_SUBTEST(run_and_compare_to_gpu(eigenvalues_direct<Matrix2f>(), nthreads, in, out));
+  std::cout << "  Test passed: eigenvalues_direct<Matrix2f>" << std::endl;
 
   // Test std::complex.
   CALL_SUBTEST(run_and_compare_to_gpu(complex_operators<Vector3cf>(), nthreads, cfin, cfout));
+  std::cout << "  Test passed: complex_operators<Vector3cf>" << std::endl;
   CALL_SUBTEST(test_with_infs_nans(complex_sqrt<Vector3cf>(), nthreads, cfin, cfout));
+  std::cout << "  Test passed: complex_sqrt<Vector3cf>" << std::endl;
 
   // numeric_limits
   CALL_SUBTEST(test_with_infs_nans(numeric_limits_test<Vector3f>(), 1, in, out));
+  std::cout << "  Test passed: numeric_limits_test<Vector3f>" << std::endl;
 
   // These tests require dynamic-sized matrix multiplcation, which isn't currently
   // supported on GPU.

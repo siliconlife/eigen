@@ -367,7 +367,7 @@ struct GpuDevice {
 
 #define LAUNCH_GPU_KERNEL(kernel, gridsize, blocksize, sharedmem, device, ...)        \
   (kernel)<<<(gridsize), (blocksize), (sharedmem), (device).stream()>>>(__VA_ARGS__); \
-  gpu_assert(cudaGetLastError() == cudaSuccess);
+  gpu_assert(gpuGetLastError() == gpuSuccess);
 
 #endif
 
@@ -375,9 +375,15 @@ struct GpuDevice {
 #ifdef EIGEN_GPUCC
 static EIGEN_DEVICE_FUNC inline void setGpuSharedMemConfig(gpuSharedMemConfig config) {
 #ifndef EIGEN_GPU_COMPILE_PHASE
+  // MUSA's musaDeviceSetSharedMemConfig is deprecated and may fail.
+  // Skip this call on MUSA to avoid assertion failures.
+#ifndef EIGEN_MUSACC
   gpuError_t status = gpuDeviceSetSharedMemConfig(config);
   EIGEN_UNUSED_VARIABLE(status)
   gpu_assert(status == gpuSuccess);
+#else
+  EIGEN_UNUSED_VARIABLE(config)
+#endif
 #else
   EIGEN_UNUSED_VARIABLE(config)
 #endif

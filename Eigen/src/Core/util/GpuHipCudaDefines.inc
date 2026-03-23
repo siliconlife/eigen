@@ -53,6 +53,37 @@
 #define gpuDeviceSynchronize hipDeviceSynchronize
 #define gpuMemcpy hipMemcpy
 
+#elif defined(EIGEN_USE_MUSA)
+
+#define gpuStream_t musaStream_t
+#define gpuDeviceProp_t musaDeviceProp
+#define gpuError_t musaError_t
+#define gpuSuccess musaSuccess
+#define gpuErrorNotReady musaErrorNotReady
+#define gpuGetDeviceCount musaGetDeviceCount
+#define gpuGetLastError musaGetLastError
+#define gpuPeekAtLastError musaPeekAtLastError
+#define gpuGetErrorName musaGetErrorName
+#define gpuGetErrorString musaGetErrorString
+#define gpuGetDeviceProperties musaGetDeviceProperties
+#define gpuStreamDefault musaStreamDefault
+#define gpuGetDevice musaGetDevice
+#define gpuSetDevice musaSetDevice
+#define gpuMalloc musaMalloc
+#define gpuFree musaFree
+#define gpuMemsetAsync musaMemsetAsync
+#define gpuMemset2DAsync musaMemset2DAsync
+#define gpuMemcpyAsync musaMemcpyAsync
+#define gpuMemcpyDeviceToDevice musaMemcpyDeviceToDevice
+#define gpuMemcpyDeviceToHost musaMemcpyDeviceToHost
+#define gpuMemcpyHostToDevice musaMemcpyHostToDevice
+#define gpuStreamQuery musaStreamQuery
+#define gpuSharedMemConfig musaSharedMemConfig
+#define gpuDeviceSetSharedMemConfig musaDeviceSetSharedMemConfig
+#define gpuStreamSynchronize musaStreamSynchronize
+#define gpuDeviceSynchronize musaDeviceSynchronize
+#define gpuMemcpy musaMemcpy
+
 #else
 
 #define gpuStream_t cudaStream_t
@@ -89,8 +120,8 @@
 // gpu_assert can be overridden
 #ifndef gpu_assert
 
-#if defined(EIGEN_HIP_DEVICE_COMPILE)
-// HIPCC do not support the use of assert on the GPU side.
+#if defined(EIGEN_HIP_DEVICE_COMPILE) || defined(EIGEN_MUSA_ARCH)
+// HIPCC/MUSACC do not support the use of assert on the GPU side.
 #define gpu_assert(COND)
 #else
 #define gpu_assert(COND) eigen_assert(COND)

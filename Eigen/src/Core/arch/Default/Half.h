@@ -139,6 +139,8 @@ struct half_base : public __half_raw {
 #if defined(EIGEN_HAS_GPU_FP16)
 #if defined(EIGEN_HAS_HIP_FP16)
   EIGEN_DEVICE_FUNC _EIGEN_MAYBE_CONSTEXPR half_base(const __half& h) { x = __half_as_ushort(h); }
+#elif defined(EIGEN_HAS_MUSA_FP16)
+  EIGEN_DEVICE_FUNC _EIGEN_MAYBE_CONSTEXPR half_base(const __half& h) { x = __half_as_ushort(h); }
 #elif defined(EIGEN_HAS_CUDA_FP16)
 #if EIGEN_CUDA_SDK_VER >= 90000
   EIGEN_DEVICE_FUNC _EIGEN_MAYBE_CONSTEXPR half_base(const __half& h) : __half_raw(*(__half_raw*)&h) {}
@@ -176,6 +178,8 @@ struct half : public half_impl::half_base {
 
 #if defined(EIGEN_HAS_GPU_FP16)
 #if defined(EIGEN_HAS_HIP_FP16)
+  EIGEN_DEVICE_FUNC _EIGEN_MAYBE_CONSTEXPR half(const __half& h) : half_impl::half_base(h) {}
+#elif defined(EIGEN_HAS_MUSA_FP16)
   EIGEN_DEVICE_FUNC _EIGEN_MAYBE_CONSTEXPR half(const __half& h) : half_impl::half_base(h) {}
 #elif defined(EIGEN_HAS_CUDA_FP16)
 #if defined(EIGEN_CUDA_SDK_VER) && EIGEN_CUDA_SDK_VER >= 90000

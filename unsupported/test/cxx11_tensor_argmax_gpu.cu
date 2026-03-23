@@ -60,6 +60,7 @@ void test_gpu_simple_argmax() {
   gpuFree(d_in);
   gpuFree(d_out_max);
   gpuFree(d_out_min);
+  std::cout << "  Test passed: test_gpu_simple_argmax<" << (Layout == RowMajor ? "RowMajor" : "ColMajor") << ">" << std::endl;
 }
 
 template <int DataLayout>
@@ -159,6 +160,7 @@ void test_gpu_argmax_dim() {
     gpuFree(d_in);
     gpuFree(d_out);
   }
+  std::cout << "  Test passed: test_gpu_argmax_dim<" << (DataLayout == RowMajor ? "RowMajor" : "ColMajor") << ">" << std::endl;
 }
 
 template <int DataLayout>
@@ -258,6 +260,7 @@ void test_gpu_argmin_dim() {
     gpuFree(d_in);
     gpuFree(d_out);
   }
+  std::cout << "  Test passed: test_gpu_argmin_dim<" << (DataLayout == RowMajor ? "RowMajor" : "ColMajor") << ">" << std::endl;
 }
 
 EIGEN_DECLARE_TEST(cxx11_tensor_argmax_gpu) {

@@ -64,6 +64,7 @@ void test_gpu_cumsum(int m_size, int k_size, int n_size) {
 
   gpuFree((void*)d_t_input);
   gpuFree((void*)d_t_result);
+  std::cout << "  Test passed: test_gpu_cumsum<" << (DataLayout == RowMajor ? "RowMajor" : "ColMajor") << ">(" << m_size << "," << k_size << "," << n_size << ")" << std::endl;
 }
 
 EIGEN_DECLARE_TEST(cxx11_tensor_scan_gpu) {

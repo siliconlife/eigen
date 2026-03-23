@@ -49,6 +49,7 @@ static void test_full_reductions() {
 
   gpu_device.deallocate(gpu_in_ptr);
   gpu_device.deallocate(gpu_out_ptr);
+  std::cout << "  Test passed: test_full_reductions<" << typeid(Type).name() << ", " << (DataLayout == RowMajor ? "RowMajor" : "ColMajor") << ">" << std::endl;
 }
 
 template <typename Type, int DataLayout>
@@ -89,6 +90,7 @@ static void test_first_dim_reductions() {
 
   dev.deallocate(in_data);
   dev.deallocate(out_data);
+  std::cout << "  Test passed: test_first_dim_reductions<" << typeid(Type).name() << ", " << (DataLayout == RowMajor ? "RowMajor" : "ColMajor") << ">" << std::endl;
 }
 
 template <typename Type, int DataLayout>
@@ -129,6 +131,7 @@ static void test_last_dim_reductions() {
 
   dev.deallocate(in_data);
   dev.deallocate(out_data);
+  std::cout << "  Test passed: test_last_dim_reductions<" << typeid(Type).name() << ", " << (DataLayout == RowMajor ? "RowMajor" : "ColMajor") << ">" << std::endl;
 }
 
 EIGEN_DECLARE_TEST(cxx11_tensor_reduction_gpu) {

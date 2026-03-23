@@ -4,6 +4,9 @@
 #ifdef EIGEN_USE_HIP
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
+#elif defined(EIGEN_USE_MUSA)
+#include <musa_runtime.h>
+#include <musa_runtime_api.h>
 #else
 #include <cuda.h>
 #include <cuda_runtime.h>
@@ -12,7 +15,7 @@
 
 #include <iostream>
 
-#if !defined(__CUDACC__) && !defined(__HIPCC__)
+#if !defined(__CUDACC__) && !defined(__HIPCC__) && !defined(__MUSACC__)
 dim3 threadIdx, blockDim, blockIdx;
 #endif
 
@@ -55,7 +58,7 @@ void run_on_gpu(const Kernel& ker, int n, const Input& in, Output& out) {
                                                             typename std::decay<decltype(*d_out)>::type>),
                      dim3(Grids), dim3(Blocks), 0, 0, ker, n, d_in, d_out);
 #else
-  // Various versions of clang-format incorrectly add spaces to the kernel launch brackets.
+  // MUSA and CUDA both use <<<>>> kernel launch syntax
   // clang-format off
   run_on_gpu_meta_kernel<<<Grids, Blocks>>>(ker, n, d_in, d_out);
   // clang-format on
@@ -111,6 +114,9 @@ struct compile_time_device_info {
 #if defined(EIGEN_HIP_DEVICE_COMPILE)
       info[1] = int(EIGEN_HIP_DEVICE_COMPILE + 0);
 #endif
+#if defined(__MUSA_ARCH__)
+      info[2] = int(__MUSA_ARCH__ + 0);
+#endif
     }
   }
 };
@@ -142,8 +148,13 @@ void ei_test_init_gpu() {
   std::cout << "  EIGEN_HIPCC:                 " << int(EIGEN_HIPCC) << "\n";
 #endif
 
+#ifdef EIGEN_MUSACC
+  std::cout << "  EIGEN_MUSACC:                " << int(EIGEN_MUSACC) << "\n";
+#endif
+
   std::cout << "  EIGEN_CUDA_ARCH:             " << info[0] << "\n";
   std::cout << "  EIGEN_HIP_DEVICE_COMPILE:    " << info[1] << "\n";
+  std::cout << "  EIGEN_MUSA_ARCH:             " << info[2] << "\n";
 
   std::cout << "GPU device info:\n";
   std::cout << "  name:                        " << deviceProp.name << "\n";
